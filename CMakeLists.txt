@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.16)
 set(LLVM_ROOT "D:/APP/LLVM/clang+llvm-18.1.8-x86_64-pc-windows-msvc")
 
 # ============================================================
-# 判断生成器类型，分别设置
+# 判断生成器类型，分别设置编译器和链接器
 # ============================================================
 if(CMAKE_GENERATOR MATCHES "Ninja|NMake")
   # ------------------------------
@@ -20,7 +20,6 @@ elseif(CMAKE_GENERATOR MATCHES "Visual Studio")
   # VS 生成器模式：通过 -T ClangCL 使用 LLVM 工具集
   # CMake 会自动找到 clang-cl 和 link.exe，无需额外设置
   # ------------------------------
-  # 什么都不做，VS 生成器 + ClangCL 工具集会处理好一切
 endif()
 
 project(LLVMHelloWorld)
@@ -72,14 +71,16 @@ llvm_map_components_to_libnames(LLVM_LIBS support core irreader)
 target_link_libraries(HelloLLVM ${LLVM_LIBS})
 
 # ============================================================
-# Debug 模式的额外修正
+# Debug 模式下强制匹配 LLVM 预编译库的 CRT 设置
 #
-# 因为上面设置了全局 CRT 为 /MD，但 Debug 模式下
-# MSVC 标准库头文件仍会强制定义 _ITERATOR_DEBUG_LEVEL=2，
-# 与 LLVM 预编译库（_ITERATOR_DEBUG_LEVEL=0）冲突。
+# 因为 LLVM 预编译库是 Release 版（_ITERATOR_DEBUG_LEVEL=0, /MD），
+# 而 Debug 构建默认 _ITERATOR_DEBUG_LEVEL=2, /MDd，会链接失败。
 #
 # 这里用生成器表达式，仅在 Debug 配置时强制追加 /MD 和
 # /D_ITERATOR_DEBUG_LEVEL=0，确保和 LLVM 库一致。
+#
+# Ninja 模式：必须，否则链接报 /failifmismatch
+# VS 模式：同样需要，ClangCL 工具集不改变 CRT 默认值
 # ============================================================
 target_compile_options(HelloLLVM PRIVATE
   $<$<CONFIG:Debug>:/MD>
