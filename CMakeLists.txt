@@ -6,20 +6,14 @@ cmake_minimum_required(VERSION 3.16)
 set(LLVM_ROOT "D:/APP/LLVM/clang+llvm-18.1.8-x86_64-pc-windows-msvc")
 
 # ============================================================
-# 判断生成器类型，分别设置编译器和链接器
+# 根据生成器类型加载对应的专用配置
 # ============================================================
 if(CMAKE_GENERATOR MATCHES "Ninja|NMake")
-  # ------------------------------
-  # Ninja / NMake 模式：直接指定 clang-cl + lld-link
-  # ------------------------------
-  set(CMAKE_C_COMPILER "${LLVM_ROOT}/bin/clang-cl.exe")
-  set(CMAKE_CXX_COMPILER "${LLVM_ROOT}/bin/clang-cl.exe")
-  set(CMAKE_LINKER "${LLVM_ROOT}/bin/lld-link.exe")
+  include(cmake_llvm.cmake)
 elseif(CMAKE_GENERATOR MATCHES "Visual Studio")
-  # ------------------------------
-  # VS 生成器模式：通过 -T ClangCL 使用 LLVM 工具集
-  # CMake 会自动找到 clang-cl 和 link.exe，无需额外设置
-  # ------------------------------
+  include(cmake_vs.cmake)
+else()
+  message(FATAL_ERROR "不支持的生成器: ${CMAKE_GENERATOR}")
 endif()
 
 project(LLVMHelloWorld)
