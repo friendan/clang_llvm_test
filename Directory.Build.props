@@ -1,0 +1,9 @@
+<Project>
+  <!-- 属性组：存放编译/工具配置参数 -->
+  <PropertyGroup>
+    <!-- LLVM 安装根目录（必须是你本地真实的 LLVM 路径） -->
+    <LLVMInstallDir>D:\APP\LLVM\clang+llvm-18.1.8-x86_64-pc-windows-msvc</LLVMInstallDir>
+    <!-- 使用的 LLVM 工具版本 -->
+    <LLVMToolsVersion>18.1.8</LLVMToolsVersion>
+  </PropertyGroup>
+</Project>
