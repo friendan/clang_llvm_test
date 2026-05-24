@@ -10,8 +10,15 @@
 5. 每次改完代码后 要编译项目且没有编译报错才算修改成功 有报错要修正 
 
 
-### 构建步骤
-1. build_sln.bat 执行这个脚本生成工程文件
-2. build_debug.bat   执行这个脚本编译生成调试版本程序(默认用这个)
-3. build_release.bat 执行这个脚本编译生成发布版本程序
+### 构建步骤（Ninja + clang-cl 路线，推荐日常使用）
+1. `build_clang_sln.bat` — 生成 Ninja 工程文件（build_clang 目录）
+2. `build_clang_debug.bat` — 编译生成调试版本程序（默认用这个）
+3. `build_clang_release.bat` — 编译生成发布版本程序
+4. `bin\HelloLLVM.exe` — 运行程序
+
+### 构建步骤（VS 生成器 + ClangCL 路线，用于 VS 调试）
+1. `build_vs_sln.bat` — 生成 VS .sln 工程文件（build_vs 目录）
+2. `build_vs_debug.bat` — VS 调试版本编译
+3. `build_vs_release.bat` — VS 发布版本编译
+4. 双击 `build_vs\LLVMHelloWorld.sln` 可直接在 VS 中打开并调试
 
