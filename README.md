@@ -10,3 +10,5 @@ C++ Clang tools for Windows
 目前你用的是 NMake + clang-cl + lld-link 的路线，不需要这个 VS 组件也能正常用 LLVM 编译。
 如果你想回到 VS 生成器 + .sln 的路线，就需要安装那个组件。
 https://learn.microsoft.com/zh-cn/cpp/build/clang-support-msbuild?view=msvc-170
+
+https://github.com/llvm/llvm-project/releases
