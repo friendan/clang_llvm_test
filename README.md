@@ -12,3 +12,5 @@ C++ Clang tools for Windows
 https://learn.microsoft.com/zh-cn/cpp/build/clang-support-msbuild?view=msvc-170
 
 https://github.com/llvm/llvm-project/releases
+
+https://github.com/zufuliu/llvm-utils
