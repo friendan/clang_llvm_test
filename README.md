@@ -14,3 +14,9 @@ https://learn.microsoft.com/zh-cn/cpp/build/clang-support-msbuild?view=msvc-170
 https://github.com/llvm/llvm-project/releases
 
 https://github.com/zufuliu/llvm-utils
+
+#使用指定位置的LLVM 不读系统环境变量里面的
+@echo off
+call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x64 2>nul
+set LLVM_ROOT=D:\APP\LLVM\clang+llvm-18.1.8-x86_64-pc-windows-msvc
+set PATH=%LLVM_ROOT%\bin;D:\APP\LLVM;%PATH%

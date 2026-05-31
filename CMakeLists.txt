@@ -1,9 +1,14 @@
 cmake_minimum_required(VERSION 3.16)
 
 # ============================================================
-# LLVM 独立分发包路径（请根据你的实际路径修改）
+# LLVM 路径：从系统环境变量 LLVMInstallDir 读取
 # ============================================================
-set(LLVM_ROOT "D:/APP/LLVM/clang+llvm-18.1.8-x86_64-pc-windows-msvc")
+if(DEFINED ENV{LLVMInstallDir})
+  file(TO_CMAKE_PATH "$ENV{LLVMInstallDir}" LLVM_ROOT)
+else()
+  message(FATAL_ERROR "环境变量 LLVMInstallDir 未设置，请在系统中设置 LLVM 安装路径")
+endif()
+message(STATUS "LLVM_ROOT: ${LLVM_ROOT}")
 
 # ============================================================
 # 根据生成器类型加载对应的专用配置
@@ -28,16 +33,11 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 # ============================================================
-# ⚠️ CRT（C 运行时库）设置
+# CRT（C 运行时库）设置
 #
-# LLVM 官方提供的预编译库是 Release 版，使用 /MD（动态链接、Release 运行时）。
-# 所以不管是 Debug 还是 Release 构建，都必须统一用 /MD（MultiThreadedDLL），
-# 而非默认的 Debug 用 /MDd、Release 用 /MD。
-#
-# 如果以后你自己从源码编译了 LLVM 的 Debug 版库，可以改回下面这种配置：
-#   set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+# LLVM 22.x 预编译库使用 /MT（静态链接），所以本项目也必须用静态运行时。
 # ============================================================
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
 
 add_compile_options("/utf-8")
 add_compile_options("/FS")
@@ -63,20 +63,3 @@ target_compile_definitions(HelloLLVM PRIVATE ${LLVM_DEFINITIONS})
 # 链接 LLVM 库
 llvm_map_components_to_libnames(LLVM_LIBS support core irreader)
 target_link_libraries(HelloLLVM ${LLVM_LIBS})
-
-# ============================================================
-# Debug 模式下强制匹配 LLVM 预编译库的 CRT 设置
-#
-# 因为 LLVM 预编译库是 Release 版（_ITERATOR_DEBUG_LEVEL=0, /MD），
-# 而 Debug 构建默认 _ITERATOR_DEBUG_LEVEL=2, /MDd，会链接失败。
-#
-# 这里用生成器表达式，仅在 Debug 配置时强制追加 /MD 和
-# /D_ITERATOR_DEBUG_LEVEL=0，确保和 LLVM 库一致。
-#
-# Ninja 模式：必须，否则链接报 /failifmismatch
-# VS 模式：同样需要，ClangCL 工具集不改变 CRT 默认值
-# ============================================================
-target_compile_options(HelloLLVM PRIVATE
-  $<$<CONFIG:Debug>:/MD>
-  $<$<CONFIG:Debug>:/D_ITERATOR_DEBUG_LEVEL=0>
-)

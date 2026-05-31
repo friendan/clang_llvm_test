@@ -1,5 +1,5 @@
 @echo off
-call init_env.bat
+call %~dp0init_env.bat
 
 cmake --build build_vs --config Debug
-@cmd /k
+rem @cmd /k
